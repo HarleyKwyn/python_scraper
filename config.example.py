@@ -1,0 +1,5 @@
+twilio_account = "ACXXXXXXXXXXXXXXXXX"
+twilio_token = "YYYYYYYYYYYYYYYYYY"
+twilio_number = "+14085555555"
+nylas_id = "adfasdlkfjl;kjsadf"
+nylas_secret = "asdfl;kjdkfjk;lakjs"

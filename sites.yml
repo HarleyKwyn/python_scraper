@@ -1,0 +1,38 @@
+campsites:
+  upper_pines:
+    name: upper-pines
+    contract_code: NRSO
+    park_id: 70928
+    site_types:
+      - 2003 # tent
+      - 3100 # tent-only
+      - 9002 # group sites
+  north_pines:
+    name: north-pines
+    contract_code: NRSO
+    park_id: 70927
+    site_types:
+      - 2003 # tent
+      - 3100 # tent-only
+      - 9002 # group sites
+  lower_pines:
+    name: lower-pines
+    contract_code: NRSO
+    park_id: 70925
+    site_types:
+      - 2003 # tent
+      - 3100 # tent-only
+      - 9002 # group sites
+  point_reyes:
+    name: point-reyes-national-seashore-campground
+    contract_code: NRSO
+    park_id: 72393
+    site_id: 318005
+    loops:
+      - 104278
+      - 104280
+      - 204279
+    site_types:
+      - 2003 # tent
+      - 3100 # tent-only
+      - 9002 # group sites

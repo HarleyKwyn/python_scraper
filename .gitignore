@@ -1,3 +1,5 @@
 venv
 integration.yml
 theluckyfew.yml
+config.py
+*.pyc
