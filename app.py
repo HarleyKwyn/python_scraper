@@ -8,10 +8,6 @@ from notifications import Notifications
 from string import Template
 from datetime import datetime, timedelta
 from dateutil.rrule import * # Import rrule and coresponding date, day, time enums
-import time, threading
-def foo():
-    print(time.ctime())
-    threading.Timer(10, foo).start()
 '''
 build api that will accept request with
 - email address
@@ -72,35 +68,27 @@ class SiteScraper(object):
     #         sunday_string = datetime.strftime(sunday, date_string_format)
     #         dates.append((friday_string, sunday_string))
     #     return dates
-    def clean_up_dates():
-        valid_dates = list();
-        for date in self.dates:
-            if datetime.strptime(date, self.date_string_format) > datetime.now():
-                list.append(date)
-        self.dates = valid_dates
-
     def run(self):
         data = self.build_form_data_for_site()
         print 'built formdata for ' + self.site['name']
         for formdata in data:
             self.check_site(formdata)
         self.notifications.close_smtp_connection()
-        self.clean_up_dates()
-        if len(self.dates) > 0:
-            five_minutes = 300000
-            threading.Timer(3000, self.run).start()
     def build_form_data_for_site(self):
         date_string_format = self.date_string_format = '%m/%d/%Y'
+        form_post_format = self.date_string_format ='%a %b %d %Y'
         all_data = list()
         # for each site type
         for site_type in self.site['site_types']:
             form_data = copy.deepcopy(self.data)
             form_data['lookingFor'] = site_type
+            form_data['submitSiteForm'] = 'true'
             # for each date
             for date in self.dates:
-                form_data['arrivalDate'] = date
-                departureDate = datetime.strptime(date, date_string_format) + timedelta(days=self.length_of_stay)
-                form_data['departureDate'] = datetime.strftime(departureDate, date_string_format)
+                arv_date = datetime.strptime(date, date_string_format)
+                form_data['arrivalDate'] = arv_date.strftime(form_post_format)
+                departureDate = arv_date + timedelta(days=self.length_of_stay)
+                form_data['departureDate'] = datetime.strftime(departureDate, form_post_format)
                 # if it has loops
                 if 'loops' in self.site:
                     for loop in self.site['loops']:
@@ -119,6 +107,7 @@ class SiteScraper(object):
         # Arrival date
         arvdate = formdata['arrivalDate']
         s = self.session
+        print formdata
         page = s.post('http://www.recreation.gov/campsiteSearch.do', headers=self.headers, data=formdata)
         tree = html.fromstring(page.content)
         sites_available_element = tree.cssselect(self.sites_available_css_path)
@@ -131,11 +120,12 @@ class SiteScraper(object):
                 links = tree.cssselect(self.book_site_link_css_path)
                 print 'found', len(links), 'links'
                 for link in links:
-                    href = link.attrib['href']
+                    print link.text
                     if 'See Details' in link.text:
+                        href = link.attrib['href']
                         print href
                         parsed_url = urlparse(href)
-                        query_params =parse_qs(parsed_url.query)
+                        query_params = parse_qs(parsed_url.query)
                         print query_params
                         if 'siteId' in query_params:
                             # site_id = query_params['siteId'][0]
@@ -153,10 +143,10 @@ class SiteScraper(object):
                                 # self.notifications.send_text(self.contact_methods['phone_number'], subject, link_with_arv_date)
                             print output
                             break
-                    else:
-                        print link.text
-                        break
         else:
+            text_file = open("output.html", "wb")
+            text_file.write(page.content)
+            text_file.close()
             print 'error checking site'
 
 
@@ -169,7 +159,7 @@ with open('./sites.yml') as sites_file:
     }
     user_preferences = {
         'contact_methods' : contact_methods,
-        'arrival_dates' : ['08/20/2016', '09/20/2016'],
+        'arrival_dates' : ['07/29/2016'],
         'length_of_stay' : 2
     }
     # TODO: write function to trim arrival date < the DateTime.today()
