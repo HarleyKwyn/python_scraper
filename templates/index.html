@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1 class="text-center">Campsite Camper</h1>
+  <form action="/add_job" method="post" class="input_group">
+    <input id="firstname" name="firstname"  class="form-control" type="string" placeholder="First Name">
+    <input id="lastname"  name="lastname" class="form-control" type="string" placeholder="Last Name">
+    <div> Location you would like to be notified about </div>
+    <div class="info"> You can create multiple jobs if you want to be notified for mutliple locations</div>
+    <select id="location" name="location" class="form-control">
+       {% for location in locations %}
+          <option value="{{location.id}}">{{location.name}}</option>
+       {% endfor %}
+    </select>
+    <div> Contact methods you want to be notified by: </div>
+    <input id="email" name="email"  class="form-control"type="email" placeholder="Email">
+    <input id="phone" name="phone" class="form-control" type="tel" placeholder="Phone Number">
+    <div> Dates and length of stay for your trip </div>
+    <input id="arrival_dates" name="arrival_dates" class="form-control" placeholder="Arrival dates ie: 10/20/2016, 10/27/2016">
+    <input id="length_of_stay" name="length_of_stay " class="form-control" placeholder="Number of nights" type="integer" min="1">
+    <input class="btn btn-info form-control" type="submit" value="Submit">
+  </form>
+{% endblock %}

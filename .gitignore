@@ -3,3 +3,6 @@ integration.yml
 theluckyfew.yml
 config.py
 *.pyc
+*.db
+*.log
+*.log.*
