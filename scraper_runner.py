@@ -2,8 +2,8 @@ import yaml
 import copy
 import config
 import logging
-from scraper import SiteScraper
-from db_helper import SQLiteHelper
+from src.scraper import SiteScraper
+from src.db_helper import SQLiteHelper
 
 # def build_scrapers():
 #     db.getJobs():
@@ -17,13 +17,12 @@ def main():
     jobs = db.get_jobs()
     for job in jobs:
         sites = db.get_site_details_by_location_id(job.location)
-        job.set_sites(sites)
         scrapers = list()
         print sites
         for site in sites:
-            logging.info('Building scraper for {0} and dates {1}'.format(site['name'], job['arrival_dates']))
-            scraper = SiteScraper(site=site, user_preferences=job)
-            logging.info('running scraper {0} for dates {1}'.format(scraper.site['name'], scraper.dates))
+            logging.info('Building scraper for {0} and dates {1}'.format(site['name'], job.arrival_date, job.length_of_stay))
+            scraper = SiteScraper(site, job, db.update_job_last_notified)
+            logging.info('running scraper {0} for date {1} and {2} nights'.format(scraper.site['name'], scraper.arrival_date, scraper.length_of_stay))
             scraper.run()
     logging.info('Finished')
 

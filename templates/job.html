@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="text-center">Job ID {{job.id}}</h1>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">Job Details</h3>
+  </div>
+  <div class="panel-body row">
+    <div class="col-sm-12">
+    <p> Location: {{job.location}} </p>
+    <p> Arrival Date: {{job.arrival_date}}</p>
+    <p> Number of Nights: {{job.length_of_stay}}</p>
+    </div>
+    <div class="col-sm-12">
+        <a href="{{job.id}}/delete" class="btn btn-danger">Delete Job</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

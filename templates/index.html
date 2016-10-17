@@ -2,21 +2,94 @@
 {% block content %}
   <h1 class="text-center">Campsite Camper</h1>
   <form action="/add_job" method="post" class="input_group">
-    <input id="firstname" name="firstname"  class="form-control" type="string" placeholder="First Name">
-    <input id="lastname"  name="lastname" class="form-control" type="string" placeholder="Last Name">
-    <div> Location you would like to be notified about </div>
-    <div class="info"> You can create multiple jobs if you want to be notified for mutliple locations</div>
-    <select id="location" name="location" class="form-control">
-       {% for location in locations %}
-          <option value="{{location.id}}">{{location.name}}</option>
-       {% endfor %}
-    </select>
-    <div> Contact methods you want to be notified by: </div>
-    <input id="email" name="email"  class="form-control"type="email" placeholder="Email">
-    <input id="phone" name="phone" class="form-control" type="tel" placeholder="Phone Number">
-    <div> Dates and length of stay for your trip </div>
-    <input id="arrival_dates" name="arrival_dates" class="form-control" placeholder="Arrival dates ie: 10/20/2016, 10/27/2016">
-    <input id="length_of_stay" name="length_of_stay " class="form-control" placeholder="Number of nights" type="integer" min="1">
+    <div class="panel panel-info">
+      <div class="panel-heading ">
+        <h3 class="panel-title">Contact Info</h3>
+      </div>
+      <div class="panel-body row">
+        <div class="col-md-6">
+          <label for="firstname">First Name</label>
+          <input id="firstname" name="firstname"  class="form-control" type="string" placeholder="First Name">
+        </div>
+        <div class="col-md-6">
+          <label for="lastname">Last Name</label>
+          <input id="lastname"  name="lastname" class="form-control" type="string" placeholder="Last Name">
+        </div>
+        <div class="col-sm-12"> Contact methods you want to be notified by: </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <label for="email_notifications" class="sr-only">Toggle e-mail notifcations</label>
+              <input id="email_notifications" type="checkbox" name="email_notifications">
+            </span>
+            <input id="email" name="email"  class="form-control"type="email" placeholder="Email">
+          </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <label for="text_notifications" class="sr-only">Toggle text notifcations</label>
+              <input id="text_notifications" type="checkbox" name="text_notification">
+            </span>
+            <input id="phone" name="phone" class="form-control" type="tel" placeholder="Phone Number">
+          </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+      </div>
+    </div>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Campsite Info</h3>
+      </div>
+      <div class="panel-body row">
+        <div class="col-sm-12 col-lg-6">
+          <label for="location"> Location you would like to be notified about </label>
+          <select id="location" name="location" class="form-control">
+            {% for location in locations %}
+            <option value="{{location.id}}">{{location.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-12 col-lg-6"> <strong>Dates and length of stay for your trip (YYYY-MM-DD)</strong> </div>
+        <div class="col-md-12 col-lg-6">
+          {% if date_error %}
+            <div class="label label-danger">{{date_error}}</div>
+          {% endif %}
+
+          <div class="input-daterange input-group" id="datepicker">
+            <label for="arrival_date" class="sr-only">Arrival Date</label>
+            <label for="departure_date" class="sr-only">Departure Date</label>
+            <input id="arrival_date" class="input-md form-control" name="arrival_date"
+              min='0001-01-01' and max='9999-12-31' type="date"/>
+              <!-- type="text"/> -->
+            <span class="input-group-addon">to</span>
+            <input id="departure_date" class="input-md form-control" name="departure_date"
+              min='0001-01-01' and max='9999-12-31' type="date"/>
+              <!-- type="text" /> -->
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+         <span class="glyphicon glyphicon-info-sign info"></span> Create multiple jobs if you want to be notified for mutliple locations or times
+      </div>
+    </div>
     <input class="btn btn-info form-control" type="submit" value="Submit">
   </form>
+  <script>
+  (function() {
+    var departureDateInput = document.getElementById('departure_date');
+    var arrivalDateInput = document.getElementById('arrival_date');
+    var setOpposingDate= function(e) {
+      depature_date_string = departureDateInput.value;
+      arrival_date_string = arrivalDateInput.value;
+      if (depature_date_string.length > 0 && arrival_date_string.length == 0) {
+        arrivalDateInput.value = depature_date_string;
+      }
+      if (arrival_date_string.length > 0 && depature_date_string.length == 0) {
+        departureDateInput.value = arrival_date_string;
+      }
+    };
+    arrivalDateInput.addEventListener('focus', setOpposingDate);
+    departureDateInput.addEventListener('focus', setOpposingDate);
+  })();
+  </script>
 {% endblock %}
