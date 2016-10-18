@@ -5,7 +5,7 @@ from src.db_helper import SQLiteHelper
 import config
 from src.job import Job
 app = Flask(__name__)
-db = SQLiteHelper("scraper.db")
+db = SQLiteHelper(config.db_name)
 
 
 @app.route('/')
