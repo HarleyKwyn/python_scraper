@@ -5,7 +5,7 @@ from src.db_helper import SQLiteHelper
 import config
 from src.job import Job
 app = Flask(__name__)
-db = SQLiteHelper(config.db_name)
+db = SQLiteHelper(config.db_path)
 
 
 @app.route('/')
@@ -39,9 +39,9 @@ def delete_job(job_id):
     return redirect("/")
 
 if __name__ == '__main__':
-    handler = RotatingFileHandler('ui.log', maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler(config.log_dir + 'ui.log', maxBytes=10000, backupCount=1)
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     handler.setFormatter(Formatter(log_format))
     handler.setLevel(config.logging_level)
     app.logger.addHandler(handler)
-    app.run(debug=True)
+    app.run(host=config.host, port=config.port, debug=config.debug)

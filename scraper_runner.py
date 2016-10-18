@@ -11,8 +11,8 @@ from src.db_helper import SQLiteHelper
 #     logging.info('Removing jobs')
 
 def main():
-    db = SQLiteHelper(config.db_name)
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename='/var/www/scraper.git/scraper.log', level=config.logging_level)
+    db = SQLiteHelper(config.db_path)
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename=config.log_dir + 'scraper.log', level=config.logging_level)
     logging.info('Started')
     jobs = db.get_jobs()
     for job in jobs:
