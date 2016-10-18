@@ -17,14 +17,15 @@ class SiteScraper(object):
     book_site_link_css_path = 'a.book.now'
     date_string_format = '%m/%d/%Y'
     data = {
-        'siteTypeFilter':'ALL',
-        'submitSiteForm':'true',
-        'search':'site',
-        'currentMaximumWindow':12
+        'siteTypeFilter': 'ALL',
+        'submitSiteForm': 'true',
+        'search': 'site',
+        'currentMaximumWindow': 12
     }
     headers = {
         'Origin': 'http://www.recreation.gov',
         'Referer': 'http://www.recreation.gov/campsiteSearch.do',
+        # 'Host': 'www.recreation.gov',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'en-US,en;q=0.8',
         'Upgrade-Insecure-Requests': '1',
@@ -34,6 +35,10 @@ class SiteScraper(object):
         'Cache-Control': 'max-age=0',
         'Connection': 'keep-alive',
         'DNT': '1',
+    }
+
+    proxies = {
+        'http': ''
     }
 
     def __init__(self, site, job, update_job_last_notified):
@@ -61,7 +66,7 @@ class SiteScraper(object):
 
     def build_form_data_for_site(self):
         date_string_format = self.date_string_format = '%m/%d/%Y'
-        form_post_format = self.date_string_format ='%a %b %d %Y'
+        form_post_format = self.date_string_format = '%a %b %d %Y'
         all_data = list()
         # for each site type
         for site_type in self.site['site_types']:
@@ -81,10 +86,11 @@ class SiteScraper(object):
             # else add the current form_data
             else:
                 all_data.append(copy.deepcopy(form_data))
-        return all_data;
+        return all_data
 
     def init_cookies(self):
         self.session = requests.Session()
+        self.session.proxies.update(self.proxies)
         self.session.get('http://www.recreation.gov')
         self.session.get(self.url)
         # TODO: Health check here?
@@ -94,7 +100,11 @@ class SiteScraper(object):
         logging.info('Checking date {0} for {1} nights'.format(arvdate, self.length_of_stay))
         # Arrival date
         s = self.session
-        page = s.post('http://www.recreation.gov/campsiteSearch.do', headers=self.headers, data=formdata)
+        page = s.post(
+            'http://www.recreation.gov/campsiteSearch.do',
+            headers=self.headers,
+            data=formdata
+        )
         tree = html.fromstring(page.content)
         sites_available_element = tree.cssselect(self.sites_available_css_path)
         if (len(sites_available_element) > 0):
@@ -116,11 +126,10 @@ class SiteScraper(object):
                         parsed_url = urlparse(href)
                         query_params = parse_qs(parsed_url.query)
                         if 'siteId' in query_params:
-                            link_with_arv_date =urllib.quote('http://www.recreation.gov/campsiteDetails.do?' + \
-                                 parsed_url.query + \
-                                '&arvdate=' + arvdate + \
-                                '&lengthOfStay=' + str(self.length_of_stay))
-                            # TODO: Attach arvdate (format mm/dd/yyyy) and stay (int) parameters
+                            link_with_arv_date = 'http://www.recreation.gov/campsiteDetails.do?' + \
+                                parsed_url.query + \
+                                '&arvdate=' + urllib.quote(arvdate) + \
+                                '&lengthOfStay=' + str(self.length_of_stay)
                             output = 'Found {site_count} available sites for {site_name} on {arvdate} for {nights} \n {url}'.format(
                                 site_count=site_count,
                                 site_name=self.site['name'],
@@ -130,10 +139,16 @@ class SiteScraper(object):
                             )
                             subject = 'We found a campsite for {0}'.format(arvdate)
                             if 'email_address' in self.contact_methods:
-                                self.notifications.send_email(self.contact_methods['email_address'],subject , output)
+                                self.notifications.send_email(
+                                    self.contact_methods['email_address'],
+                                    subject,
+                                    output
+                                )
                             if 'phone_number' in self.contact_methods:
                                 self.notifications.send_text(self.contact_methods['phone_number'], subject, link_with_arv_date)
                             self.update_job_last_notified(self.job)
                             break
         else:
+            if page.status_code is 403:
+                print 'IP Address {0} has been blocked'.format(self.proxies['http'])
             logging.error('No site available element found')
