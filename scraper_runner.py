@@ -17,7 +17,6 @@ def main():
     jobs = db.get_jobs()
     for job in jobs:
         sites = db.get_site_details_by_location_id(job.location)
-        scrapers = list()
         for site in sites:
             logging.info('Building scraper for {0} and dates {1}'.format(site['name'], job.arrival_date, job.length_of_stay))
             scraper = SiteScraper(site, job, db.update_job_last_notified)

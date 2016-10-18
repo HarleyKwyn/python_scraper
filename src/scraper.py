@@ -38,7 +38,7 @@ class SiteScraper(object):
     }
 
     proxies = {
-        'http': ''
+        'http': 'http://173.220.170.242:7004'
     }
 
     def __init__(self, site, job, update_job_last_notified):
