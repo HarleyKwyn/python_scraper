@@ -12,7 +12,7 @@ from src.db_helper import SQLiteHelper
 
 def main():
     db = SQLiteHelper(config.db_name)
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename='scraper.log', level=config.logging_level)
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename='/var/www/scraper.git/scraper.log', level=config.logging_level)
     logging.info('Started')
     jobs = db.get_jobs()
     for job in jobs:
