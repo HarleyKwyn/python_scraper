@@ -1,20 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1 class="text-center">Job ID {{job.id}}</h1>
-<div class="panel panel-info">
+<div class="job-panel panel panel-info">
   <div class="panel-heading">
-    <h3 class="panel-title">Job Details</h3>
+    <h3 class="panel-title">Job ID: {{locals.id}}</h3>
   </div>
   <div class="panel-body row">
     <div class="col-sm-12">
-    <p> Location: {{job.location}} </p>
-    <p> Arrival Date: {{job.arrival_date}}</p>
-    <p> Number of Nights: {{job.length_of_stay}}</p>
+    <input class="hidden" id="location" value="{{locals.location.id}}"/>
+    <p> Location: {{locals.location.name}} </p>
+    <p> Arrival Date: {{locals.date}}</p>
+    <p> Number of Nights: {{locals.length_of_stay}}</p>
     </div>
     <div class="col-sm-12">
-        <a href="{{job.id}}/delete" class="btn btn-danger">Delete Job</a>
+        <a href="/jobs/{{locals.id}}/delete" class="btn btn-danger">Delete Job</a>
       </form>
     </div>
+  </div>
+  <div class="panel-footer warning">
+    Note: The job will continue to run until {{locals.date}} or you delete.
   </div>
 </div>
 {% endblock %}
