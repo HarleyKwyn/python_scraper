@@ -4,6 +4,7 @@ import re
 import yaml
 import copy
 import logging
+import config
 from lxml import html
 from urlparse import urlparse, parse_qs
 from string import Template
@@ -38,7 +39,7 @@ class SiteScraper(object):
     }
 
     proxies = {
-        'http': 'http://173.220.170.242:7004'
+        'http': config.http_proxy
     }
 
     def __init__(self, site, job, update_job_last_notified):
