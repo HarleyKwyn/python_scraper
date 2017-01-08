@@ -1,8 +1,8 @@
 import sqlite3 as lite
 import sys
 import logging
+from datetime import datetime
 from job import Job
-
 
 class SQLiteHelper(object):
     con = None
@@ -16,7 +16,6 @@ class SQLiteHelper(object):
             cursor = con.cursor()
         except lite.Error, e:
             logging.error("Error {0}:".format(e.args[0]))
-            sys.exit(1)
         try:
             results = None
             cursor_execute = None
@@ -53,10 +52,8 @@ class SQLiteHelper(object):
             return self.execute(query, False)
 
     def write_job(self, job):
-        print "-----------writing"
         job_insert_query = job.get_sql_insert_query()
         data = job.get_sql_insert_query_data()
-        print "data data data", data
         logging.debug('job insert query: {0}'.format(job_insert_query))
         self.execute(job_insert_query, False, data=data)
 
@@ -85,6 +82,13 @@ class SQLiteHelper(object):
             sites.append(self._site_from_db_record(row))
         return sites
 
+    def get_location_id_name_by_id(self, location_id):
+        name =self.fetch(
+            "SELECT location_name FROM location WHERE location_id = (?)",
+            data=location_id
+        )
+        return { "id": location_id, "name": name[0]}
+
     def _site_from_db_record(self, row):
         return {
             "name": row[1],
@@ -92,6 +96,18 @@ class SQLiteHelper(object):
             "park_id": row[4],
             "site_types": row[5].split(',')
         }
+
+    '''
+    Used for debuging from the browser
+    '''
+    def get_jobs(self):
+        rows = self.fetchall("SELECT * FROM job;")
+        row_strings = list()
+        if rows == None:
+            return "No jobs currently scheduled..."
+        for row in rows:
+            row_strings.append(' | '.join(map(str, row)))
+        return "\n".join(row_strings);
 
     def get_locations(self):
         rows = self.fetchall("SELECT * FROM location")
@@ -102,11 +118,10 @@ class SQLiteHelper(object):
 
     def get_job_by_id(self, job_id):
         data = [job_id]
-        row = self.fetch("SELECT * from job where job_id = (?)", data=data)
+        row = self.fetch("SELECT * FROM job where job_id = (?)", data=data)
         if row is None:
             return None
         job = Job.from_db_record(row)
-        print job
         return job
 
     def update_job_by_id(self, job_id, job):
@@ -115,10 +130,12 @@ class SQLiteHelper(object):
             False,
             data=job.get_sql_insert_query_data())
         return job
+
     def update_job_last_notified(self, job):
         self.execute(
-
-            data=datetime.now()
+            "UPDATE job SET last_notified = (?) job WHERE job_id = (?)",
+            False,
+            data=[datetime.now(), job.id]
         )
 
     def delete_job_by_id(self, job_id):
