@@ -140,6 +140,5 @@ class SQLiteHelper(object):
 
     def delete_job_by_id(self, job_id):
         self.execute(
-            "DELETE FROM job WHERE job_id = (?) LIMIT 1",
-            False,
-            data=[job_id])
+            "DELETE FROM job WHERE job_id = '{0}'".format(job_id),
+            False)
