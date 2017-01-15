@@ -4,14 +4,20 @@ import re
 import copy
 import logging
 import config
+import json
 from lxml import html
 from urlparse import urlparse, parse_qs
 from string import Template
 from datetime import datetime, timedelta
 from notifications import Notifications
-
+try:
+    import http.client as http_client
+except ImportError:
+    # Python 2
+    import httplib as http_client
+http_client.HTTPConnection.debuglevel = 1
 class SiteScraper(object):
-    urlTemplate = Template('http://www.recreation.gov/camping/${name}/r/campsiteDetails.do?contractCode=${contract_code}&parkId=${park_id}')
+    urlTemplate = Template('https://www.recreation.gov/camping/${name}/r/campsiteDetails.do?contractCode=${contract_code}&parkId=${park_id}')
     sites_available_pattern = re.compile('^(\d+)')
     sites_available_css_path = 'div.matchSummary'
     book_site_link_css_path = 'a.book.now'
@@ -23,8 +29,8 @@ class SiteScraper(object):
         'currentMaximumWindow': 12
     }
     headers = {
-        'Origin': 'http://www.recreation.gov',
-        'Referer': 'http://www.recreation.gov/campsiteSearch.do',
+        'Origin': 'https://www.recreation.gov',
+        'Referer': 'https://www.recreation.gov/campsiteSearch.do',
         # 'Host': 'www.recreation.gov',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'en-US,en;q=0.8',
@@ -35,10 +41,6 @@ class SiteScraper(object):
         'Cache-Control': 'max-age=0',
         'Connection': 'keep-alive',
         'DNT': '1',
-    }
-
-    proxies = {
-        'http': config.http_proxy
     }
 
     def __init__(self, site, job, update_job_last_notified):
@@ -90,7 +92,6 @@ class SiteScraper(object):
 
     def init_cookies(self):
         self.session = requests.Session()
-        self.session.proxies.update(self.proxies)
         self.session.get('http://www.recreation.gov')
         self.session.get(self.url)
         # TODO: Health check here?
@@ -101,7 +102,7 @@ class SiteScraper(object):
         # Arrival date
         s = self.session
         page = s.post(
-            'http://www.recreation.gov/campsiteSearch.do',
+            'https://www.recreation.gov/campsiteSearch.do',
             headers=self.headers,
             data=formdata
         )
