@@ -36,7 +36,7 @@ class jobCRUDServiceTest(unittest.TestCase):
             statements = base_sql.split(';')
             for statement in statements:
                 self.db.execute(statement, False)
-        with open(os.path.dirname(__file__) + '/../migrations/populate_site.sql', 'r') as site_data:
+        with open(os.path.dirname(__file__) + '/../migrations/populate_sites.sql', 'r') as site_data:
             site_data_sql = site_data.read()
             statements = base_sql.split(';')
             for statement in statements:

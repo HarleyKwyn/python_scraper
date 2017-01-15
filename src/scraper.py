@@ -4,18 +4,12 @@ import re
 import copy
 import logging
 import config
-import json
 from lxml import html
 from urlparse import urlparse, parse_qs
 from string import Template
 from datetime import datetime, timedelta
 from notifications import Notifications
-try:
-    import http.client as http_client
-except ImportError:
-    # Python 2
-    import httplib as http_client
-http_client.HTTPConnection.debuglevel = 1
+
 class SiteScraper(object):
     urlTemplate = Template('https://www.recreation.gov/camping/${name}/r/campsiteDetails.do?contractCode=${contract_code}&parkId=${park_id}')
     sites_available_pattern = re.compile('^(\d+)')

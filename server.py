@@ -6,7 +6,6 @@ from src.job import Job
 from src.job_crud_service import JobCRUDService
 from datetime import datetime
 app = Flask(__name__)
-db = SQLiteHelper(config.db_path)
 job_crud_service = JobCRUDService()
 
 @app.route('/')
@@ -36,7 +35,7 @@ def get_job(job_id):
 
 @app.route('/admin-list')
 def get_jobs_list():
-    return  job_crud_service.get_jobs()
+    return  job_crud_service.get_db_jobs_list()
 
 @app.route('/jobs/<string:job_id>/delete')
 # I realize this isn't RESTful but this is a side project

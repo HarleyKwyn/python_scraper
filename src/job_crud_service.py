@@ -63,14 +63,14 @@ class JobCRUDService(object):
     '''
     Used for debuging from the browser
     '''
-    # def get_jobs(self):
-    #     rows = self.db.fetchall("SELECT * FROM job;")
-    #     row_strings = list()
-    #     if rows == None:
-    #         return "No jobs currently scheduled..."
-    #     for row in rows:
-    #         row_strings.append(' | '.join(map(str, row)))
-    #     return "\n".join(row_strings);
+    def get_db_jobs_list(self):
+        rows = self.db.fetchall("SELECT * FROM job;")
+        row_strings = list()
+        if rows == None:
+            return "No jobs currently scheduled..."
+        for row in rows:
+            row_strings.append(' | '.join(map(str, row)))
+        return "\n".join(row_strings);
 
     def get_locations(self):
         rows = self.db.fetchall("SELECT * FROM location")

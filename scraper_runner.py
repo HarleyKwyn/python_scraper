@@ -3,6 +3,7 @@ import config
 import logging
 from src.scraper import SiteScraper
 from src.db_helper import SQLiteHelper
+from src.job_crud_service import JobCRUDService
 
 # def build_scrapers():
 #     db.getJobs():
@@ -10,7 +11,7 @@ from src.db_helper import SQLiteHelper
 #     logging.info('Removing jobs')
 
 def main():
-    db = SQLiteHelper(config.db_path)
+    db = JobCRUDService()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename=config.log_dir + 'scraper.log', level=config.logging_level)
     logging.info('Started')
     jobs = db.get_jobs()
