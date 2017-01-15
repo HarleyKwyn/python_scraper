@@ -1,4 +1,3 @@
-import yaml
 import copy
 import config
 import logging

@@ -48,6 +48,8 @@ class Job(object):
         self.location = db_row[7]
         self.last_notified = db_row[8]
         return self
+    def set_last_notified(self, last_notified):
+        self.last_notified = last_notified
 
     def set_sites(self, sites):
         self.sites = sites

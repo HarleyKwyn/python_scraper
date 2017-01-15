@@ -1,7 +1,6 @@
 import urllib
 import requests
 import re
-import yaml
 import copy
 import logging
 import config

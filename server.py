@@ -1,32 +1,31 @@
 from flask import Flask, render_template, request, redirect, url_for
 from logging.handlers import RotatingFileHandler
 from logging import Formatter
-from src.db_helper import SQLiteHelper
 import config
 from src.job import Job
+from src.job_crud_service import JobCRUDService
 from datetime import datetime
 app = Flask(__name__)
 db = SQLiteHelper(config.db_path)
-
+job_crud_service = JobCRUDService()
 
 @app.route('/')
 def index():
-    locations = db.get_locations()
+    locations = job_crud_service.get_locations()
     return render_template("index.html", locations=locations)
 
 @app.route('/jobs', methods=['POST'])
 def add_job():
     job = Job(request.form)
-    db.write_job(job)
+    job_crud_service.write_job(job)
     # TODO: redirect ot / job_id
     return redirect("jobs/{0}".format(job.id))
 
-
 @app.route('/jobs/<string:job_id>')
 def get_job(job_id):
-    job = db.get_job_by_id(job_id)
+    job = job_crud_service.get_job_by_id(job_id)
     print "this is the one you're lookin' for", job.id
-    job_location = db.get_location_id_name_by_id(job.location)
+    job_location = job_crud_service.get_location_id_name_by_id(job.location)
     data = {
         "id": job.id,
         "location": job_location,
@@ -37,13 +36,13 @@ def get_job(job_id):
 
 @app.route('/admin-list')
 def get_jobs_list():
-    return  db.get_jobs()
+    return  job_crud_service.get_jobs()
 
 @app.route('/jobs/<string:job_id>/delete')
 # I realize this isn't RESTful but this is a side project
 # Also it'll make it so I can send out a link to easily delete jobs
 def delete_job(job_id):
-    db.delete_job_by_id(job_id)
+    job_crud_service.delete_job_by_id(job_id)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

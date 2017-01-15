@@ -1,5 +1,13 @@
 twilio_account = "ACXXXXXXXXXXXXXXXXX"
 twilio_token = "YYYYYYYYYYYYYYYYYY"
 twilio_number = "+14085555555"
-nylas_id = "adfasdlkfjl;kjsadf"
-nylas_secret = "asdfl;kjdkfjk;lakjs"
+camper_email = "notification@email.com"
+camper_pw = "notfication_password"
+camper_smtp_server="smtp.zoho.com"
+camper_smtp_port = 465
+db_path="path_to_db"
+logging_level="INFO"
+log_dir="log_directory"
+host="localhost"
+port=5000
+debug=True
