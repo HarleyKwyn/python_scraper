@@ -46,3 +46,7 @@ the scraper runs periodically on a crontab creating scrapers for each job and ru
 non-mvp features
   - On the success page e-mail them a job number and url they can go back to edit or cancel the job.  
   This should be random UUID so people can't edit or delete other peoples jobs
+
+## TODO:
+- use epoch times to allow for better search functionality in sqlite
+- Make a init_db.sh or .py that will gracefully handle making sure the db is setup correctly with tables and site data.

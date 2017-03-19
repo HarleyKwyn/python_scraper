@@ -1,7 +1,6 @@
-DROP TABLE IF EXISTS job;
-CREATE TABLE job
+CREATE TABLE IF NOT EXISTS job
 (
-  job_id TEXT, --UUID
+  job_id TEXT PRIMARY KEY, --UUID
   lastname TEXT,
   firstname TEXT,
   email TEXT,
@@ -13,17 +12,15 @@ CREATE TABLE job
   -- notification_frequency INT -- todo, figure out how to select on this as a parameter
 );
 
-DROP TABLE IF EXISTS location;
-CREATE TABLE location
+CREATE TABLE IF NOT EXISTS location
 (
-  location_id  INT,
+  location_id  INT PRIMARY KEY,
   location_name TEXT
 );
 
-DROP TABLE IF EXISTS campsite;
-CREATE TABLE campsite
+CREATE TABLE IF NOT EXISTS campsite
 (
-  campsite_id INT,
+  campsite_id INT PRIMARY KEY,
   campsite_name TEXT,
   display_name TEXT,
   contract_code TEXT,
@@ -32,9 +29,8 @@ CREATE TABLE campsite
   location_id INT
 );
 
-DROP TABLE IF EXISTS site_type;
-CREATE TABLE site_type
+CREATE TABLE IF NOT EXISTS site_type
 (
-  site_type_id INT,
+  site_type_id INT PRIMARY KEY,
   site_type_name TEXT
 );
