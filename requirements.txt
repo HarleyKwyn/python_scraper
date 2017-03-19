@@ -5,3 +5,4 @@ PyYAML==3.11
 query-string==0.0.5
 requests==1.2.3
 twilio==5.4.0
+gunicorn==19.7.0
