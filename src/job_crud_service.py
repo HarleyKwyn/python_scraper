@@ -9,7 +9,7 @@ class JobCRUDService(object):
 
     def __init__(self, override=None):
         if override is None:
-            self.db_path =config.db_path
+            self.db_path = config.db_path
         else:
             self.db_path = override
         self.db = SQLiteHelper(self.db_path)

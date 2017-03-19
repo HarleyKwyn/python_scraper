@@ -23,7 +23,6 @@ def add_job():
 @app.route('/jobs/<string:job_id>')
 def get_job(job_id):
     job = job_crud_service.get_job_by_id(job_id)
-    print "this is the one you're lookin' for", job.id
     job_location = job_crud_service.get_location_id_name_by_id(job.location)
     data = {
         "id": job.id,
