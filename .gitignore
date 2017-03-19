@@ -1,6 +1,6 @@
 venv
+.DS_Store
 integration.yml
-theluckyfew.yml
 config.py
 *.pyc
 *.db
