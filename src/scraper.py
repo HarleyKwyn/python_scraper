@@ -132,7 +132,7 @@ class SiteScraper(object):
                                 nights=self.length_of_stay,
                                 url=link_with_arv_date
                             )
-                            subject = 'We found a campsite for {0}'.format(arvdate)
+                            subject = u"\u26FA We found a campsite for {0}".format(arvdate)
                             if 'email_address' in self.contact_methods:
                                 self.notifications.send_email(
                                     self.contact_methods['email_address'],
