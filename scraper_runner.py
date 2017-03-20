@@ -18,7 +18,7 @@ def main():
     for job in jobs:
         sites = db.get_site_details_by_location_id(job.location)
         for site in sites:
-            logging.info('Building scraper for {0} and dates {1}'.format(site['name'], job.arrival_date, job.length_of_stay))
+            logging.info('Building scraper for job id {2}: {0} and dates {1}'.format(site['name'], job.arrival_date, job.length_of_stay, job.id))
             scraper = SiteScraper(site, job, db.update_job_last_notified)
             logging.info('running scraper {0} for date {1} and {2} nights'.format(scraper.site['name'], scraper.arrival_date, scraper.length_of_stay))
             scraper.run()

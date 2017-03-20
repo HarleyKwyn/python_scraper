@@ -24,12 +24,9 @@ class JobCRUDService(object):
         rows = self.db.execute("""
             SELECT *
             FROM job
-            WHERE last_notified <= datetime('now', '-15 minutes')
+            WHERE datetime(last_notified) <= datetime('now', '-15 minutes')
             """, True)
-        jobs = list()
-        for row in rows:
-            jobs.append(Job.from_db_record(row))
-        return jobs
+        return [Job(None, db_row = row) for row in rows];
 
     def get_site_details_by_location_id(self, location_id):
         site_query = """
@@ -84,7 +81,7 @@ class JobCRUDService(object):
         row = self.db.fetch("SELECT * FROM job where job_id = (?)", data=data)
         if row is None:
             return None
-        job = Job.from_db_record(row)
+        job = Job(None, db_row = row)
         return job
 
     def update_job_by_id(self, job_id, job):
