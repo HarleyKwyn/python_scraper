@@ -11,3 +11,5 @@ log_dir="log_directory"
 host="localhost"
 port=5000
 debug=True
+admin_pw="idnksomethingsecure"
+admin_username="admin"

@@ -1,12 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, Response, render_template, request, redirect, url_for
 from logging.handlers import RotatingFileHandler
 from logging import Formatter
 import config
 from src.job import Job
 from src.job_crud_service import JobCRUDService
+from functools import wraps
 from datetime import datetime
 app = Flask(__name__)
 job_crud_service = JobCRUDService()
+
+# Auth decorater
+def check_auth(username, password):
+    return username == config.admin_username and password == config.admin_pw
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/')
 def index():
@@ -33,6 +54,7 @@ def get_job(job_id):
     return render_template("job.html", locals=data)
 
 @app.route('/admin-list')
+@requires_auth
 def get_jobs_list():
     return  job_crud_service.get_db_jobs_list()
 

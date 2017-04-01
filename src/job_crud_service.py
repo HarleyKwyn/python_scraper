@@ -24,7 +24,7 @@ class JobCRUDService(object):
         rows = self.db.execute("""
             SELECT *
             FROM job
-            WHERE datetime(last_notified) <= datetime('now', '-15 minutes')
+            WHERE last_notified <= datetime('now', '-15 minutes')
             """, True)
         return [Job(None, db_row = row) for row in rows];
 
@@ -94,7 +94,9 @@ class JobCRUDService(object):
     def update_job_last_notified(self, job):
         updated_timestamp = datetime.now().isoformat();
         statement = "UPDATE job SET last_notified = '{0}' WHERE job_id = '{1}'"
+        print statement
         formatted_statement = statement.format(updated_timestamp,job.id)
+        print formatted_statement
         self.db.execute(
             formatted_statement,
             False
