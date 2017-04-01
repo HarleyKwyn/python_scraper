@@ -1,4 +1,5 @@
 from twilio.rest import TwilioRestClient
+import logging
 import config
 from smtplib import SMTPException, SMTP_SSL
 from email.mime.text import MIMEText
@@ -13,7 +14,7 @@ class Notifications(object):
             email = self.build_email(email_address, subject, message)
             self.server.sendmail(config.camper_email, [email_address], email)
         except SMTPException:
-            print "Failed to send e-mail to {0}".format(recpient)
+            logging.error("Failed to send e-mail to {0}".format(email_address))
 
     def send_text(self, number, message, url):
         self.twilio_client.messages.create(body=message, to=number, from_=config.twilio_number)
@@ -26,9 +27,9 @@ class Notifications(object):
     def close_smtp_connection(self):
         self.server.quit()
 
-    def build_email(self, recpient, subject, message):
+    def build_email(self, recipient, subject, message):
         msg = MIMEText(message)
         msg['Subject'] = subject
         msg['From'] = config.camper_email
-        msg['To'] = recpient
+        msg['To'] = recipient
         return msg.as_string()

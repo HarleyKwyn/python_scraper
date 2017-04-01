@@ -1,14 +1,13 @@
 CREATE TABLE IF NOT EXISTS job
 (
   job_id TEXT PRIMARY KEY, --UUID
-  lastname TEXT,
-  firstname TEXT,
+  name TEXT,
   email TEXT,
   phone TEXT,
-  arrival_dates INT,
-  length_of_stay INT,
+  arrival_date FLOAT,
+  departure_date FLOAT,
   location TEXT, -- String representing general camping location of interest
-  last_notified TEXT -- ISO 8601 formatted date string
+  last_notified FLOAT
   -- notification_frequency INT -- todo, figure out how to select on this as a parameter
 );
 

@@ -29,6 +29,10 @@ You submit a post request from the flask served form with your name, date, lengt
 the job is logged into the db
 the scraper runs periodically on a crontab creating scrapers for each job and running them serially. Once the jobs are run it will remove any jobs with dates past the current date from the db.
 
+## testing
+testing done with pytest :)
+Though moving tests into the test folder would be nice however I haven't figured out how to get imports to work as of yet
+
 ## UX
 - User navigates to site
 - User selects the general location they want to camp.  

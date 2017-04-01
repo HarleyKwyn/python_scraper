@@ -9,5 +9,4 @@ if __name__ == "__main__":
     handler.setFormatter(Formatter(log_format))
     handler.setLevel(config.logging_level)
     app.logger.addHandler(handler)
-    print config.db_path
     application.run()

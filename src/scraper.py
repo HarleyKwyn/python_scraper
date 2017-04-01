@@ -10,6 +10,8 @@ from string import Template
 from datetime import datetime, timedelta
 from notifications import Notifications
 
+epoch_start = datetime(1970,1,1);
+
 class SiteScraper(object):
     urlTemplate = Template('https://www.recreation.gov/camping/${name}/r/campsiteDetails.do?contractCode=${contract_code}&parkId=${park_id}')
     sites_available_pattern = re.compile('^(\d+)')
@@ -45,9 +47,11 @@ class SiteScraper(object):
             self.contact_methods["email_address"] = job.email
         if hasattr(job, "phone"):
             self.contact_methods["phone_number"] = job.phone
-        self.arrival_date = job.arrival_date
-        self.length_of_stay = job.length_of_stay
+        self.arrival_date = datetime.utcfromtimestamp(job.arrival_date)
+        self.departure_date = datetime.utcfromtimestamp(job.departure_date)
+        self.length_of_stay = (self.departure_date - self.arrival_date).days
         self.site = site
+        self.name = job.name
         self.url = self.urlTemplate.substitute(site)
         self.init_cookies()
         self.data['parkId'] = site['park_id']
@@ -70,10 +74,8 @@ class SiteScraper(object):
             if site_type != 'ALL':
                 form_data['lookingFor'] = site_type
             form_data['submitSiteForm'] = 'true'
-            # for each date
             form_data['arrivalDate'] = self.arrival_date.strftime(form_post_format)
-            departureDate = self.arrival_date + timedelta(days=self.length_of_stay)
-            form_data['departureDate'] = datetime.strftime(departureDate, form_post_format)
+            form_data['departureDate'] = datetime.strftime(self.departure_date, form_post_format)
             # if it has loops
             if 'loops' in self.site:
                 for loop in self.site['loops']:
@@ -92,7 +94,12 @@ class SiteScraper(object):
 
     def check_site(self, formdata, try_count):
         arvdate = formdata['arrivalDate']
-        logging.info('Checking date {0} for {1} nights'.format(arvdate, self.length_of_stay))
+        logging.info(
+            'Checking date {0} for {1} nights'.format(
+                arvdate,
+                self.length_of_stay
+            )
+        )
         # Arrival date
         s = self.session
         page = s.post(
@@ -125,14 +132,19 @@ class SiteScraper(object):
                                 parsed_url.query + \
                                 '&arvdate=' + urllib.quote(arvdate) + \
                                 '&lengthOfStay=' + str(self.length_of_stay)
-                            output = 'Found {site_count} available sites for {site_name} on {arvdate} for {nights} \n {url}'.format(
-                                site_count=site_count,
+                            output = """
+                                Hi {name}, \n\n
+                                We found you a campsite for {site_name} on {arvdate} for {nights}.
+                                Quick, go get it before someone else does! \n\n
+                                {url}
+                                """.format(
+                                name=self.name,
                                 site_name=self.site['name'],
                                 arvdate=arvdate,
                                 nights=self.length_of_stay,
                                 url=link_with_arv_date
                             )
-                            subject = u"\u26FA We found a campsite for {0}".format(arvdate)
+                            subject = u"\u26FA We found you a campsite for {0}!".format(arvdate)
                             if 'email_address' in self.contact_methods:
                                 self.notifications.send_email(
                                     self.contact_methods['email_address'],
@@ -141,9 +153,16 @@ class SiteScraper(object):
                                 )
                             if 'phone_number' in self.contact_methods:
                                 self.notifications.send_text(self.contact_methods['phone_number'], subject, link_with_arv_date)
+                            # Debugging to see when people get notified.
+                            # Also, if they get spammed I get spammed @_@
+                            self.notifications.send_email(
+                                config.admin_email,
+                                subject,
+                                output
+                            )
                             self.update_job_last_notified(self.job)
                             break
         else:
             if page.status_code is 403:
-                print 'IP Address {0} has been blocked'.format(self.proxies['http'])
+                logging.error('IP Address {0} has been blocked'.format(self.proxies['http']))
             logging.error('No site available element found')

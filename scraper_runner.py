@@ -13,6 +13,8 @@ from src.job_crud_service import JobCRUDService
 def main():
     db = JobCRUDService()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename=config.log_dir + 'scraper.log', level=config.logging_level)
+    logging.info('Deleting old jobs')
+    db.delete_old_jobs()
     logging.info('Started')
     jobs = db.get_jobs()
     for job in jobs:
@@ -23,6 +25,8 @@ def main():
             logging.info('running scraper {0} for date {1} and {2} nights'.format(scraper.site['name'], scraper.arrival_date, scraper.length_of_stay))
             scraper.run()
     logging.info('Finished')
+
+
 
 if __name__ == '__main__':
     main()

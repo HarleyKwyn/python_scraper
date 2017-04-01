@@ -1,5 +1,6 @@
 import logging
 import config
+import time
 from datetime import datetime
 from job import Job
 from db_helper import SQLiteHelper
@@ -21,11 +22,15 @@ class JobCRUDService(object):
         self.db.execute(job_insert_query, False, data=data)
 
     def get_jobs(self):
-        rows = self.db.execute("""
+        fifteen_minutes = 15 * 60;
+        fifteen_minutes_ago = time.time() - fifteen_minutes
+        query_template = """
             SELECT *
             FROM job
-            WHERE last_notified <= datetime('now', '-15 minutes')
-            """, True)
+            WHERE last_notified < {0}
+            """
+        query = query_template.format(fifteen_minutes_ago)
+        rows = self.db.execute(query, True)
         return [Job(None, db_row = row) for row in rows];
 
     def get_site_details_by_location_id(self, location_id):
@@ -43,7 +48,7 @@ class JobCRUDService(object):
         return sites
 
     def get_location_id_name_by_id(self, location_id):
-        name =self.db.fetch(
+        name = self.db.fetch(
             "SELECT location_name FROM location WHERE location_id = (?)",
             data=location_id
         )
@@ -92,11 +97,9 @@ class JobCRUDService(object):
         return job
 
     def update_job_last_notified(self, job):
-        updated_timestamp = datetime.now().isoformat();
-        statement = "UPDATE job SET last_notified = '{0}' WHERE job_id = '{1}'"
-        print statement
-        formatted_statement = statement.format(updated_timestamp,job.id)
-        print formatted_statement
+        current_epoch = time.time()
+        statement = "UPDATE job SET last_notified = {0} WHERE job_id = '{1}'"
+        formatted_statement = statement.format(current_epoch, job.id)
         self.db.execute(
             formatted_statement,
             False
@@ -106,3 +109,9 @@ class JobCRUDService(object):
         self.db.execute(
             "DELETE FROM job WHERE job_id = '{0}'".format(job_id),
             False)
+
+    def delete_old_jobs(self):
+        self.db.execute(
+            "DELETE FROM job WHERE arrival_date < {0}".format(time.time()),
+            False
+        )

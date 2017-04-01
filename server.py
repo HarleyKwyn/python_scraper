@@ -48,7 +48,7 @@ def get_job(job_id):
     data = {
         "id": job.id,
         "location": job_location,
-        "date": datetime.strftime(job.arrival_date, '%m/%d/%Y'),
+        "date": datetime.strftime(datetime.utcfromtimestamp(job.arrival_date), '%m/%d/%Y'),
         "length_of_stay": job.length_of_stay
     }
     return render_template("job.html", locals=data)
