@@ -5,6 +5,21 @@ Includes a UI for job creation created through Flask, Jinja
 
 These instructions may or may not be kept vague on purpose.
 
+## Setup
+1. create a config.py  
+  - required variables found n config.exmaple.py, requires smpt and imap config for an email account and a twilio token and Key
+  - Also requires that you create scraper.db file somewhere and include in the config
+3. Install the requirements from requirements.txt
+2. Add the cron job for the scraper process to run at whatever frequency you like.
+  run `crontab -e` and add the line  
+   `* * * * * python scraper_runner.py`
+   or something of that flavor  
+3. Run the DB migrations folder  
+  `sqlite3 scraper.db < migrations/base.sql`  
+  `sqlite3 scraper.db < migrations/populate_sites.sql`
+4. Serve the UI.  
+  `python server.py`
+
 ## Key components
 ### scraper.py
 This script contains the main logic for the scraping of campsite listings. It currently is abstracted so that it can work with nearly any campsite on the website though it is probably only particularly useful for extremely overbooked sites such as Yosemite and Yellowstone
@@ -52,5 +67,5 @@ non-mvp features
   This should be random UUID so people can't edit or delete other peoples jobs
 
 ## TODO:
-- use epoch times to allow for better search functionality in sqlite
+- Redo timestamps to use epoch time instead of timestamps so filterint works
 - Make a init_db.sh or .py that will gracefully handle making sure the db is setup correctly with tables and site data.
