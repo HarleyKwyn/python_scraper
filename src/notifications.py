@@ -3,6 +3,7 @@ import logging
 import config
 from smtplib import SMTPException, SMTP_SSL
 from email.mime.text import MIMEText
+import traceback
 
 class Notifications(object):
     def __init__(self):
@@ -10,10 +11,11 @@ class Notifications(object):
         self.start_smtp_connection()
 
     def send_email(self, email_address, subject, message):
+        email = self.build_email(email_address, subject, message)
         try:
-            email = self.build_email(email_address, subject, message)
             self.server.sendmail(config.camper_email, [email_address], email)
         except SMTPException:
+            traceback.print_exc()
             logging.error("Failed to send e-mail to {0}".format(email_address))
 
     def send_text(self, number, message, url):

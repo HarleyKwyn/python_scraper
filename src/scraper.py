@@ -11,7 +11,15 @@ from datetime import datetime, timedelta
 from notifications import Notifications
 
 epoch_start = datetime(1970,1,1);
+message_template = """
+Hi {name}, \n\n
+We found you a campsite for {site_name} on {arvdate} for {nights} nights.
+Quick, go get it before someone else does! \n\n
+{url}
 
+If you no longer need this job just follow this link:
+https://camper.kwyn.io/jobs/{id}/delete
+"""
 class SiteScraper(object):
     urlTemplate = Template('https://www.recreation.gov/camping/${name}/r/campsiteDetails.do?contractCode=${contract_code}&parkId=${park_id}')
     sites_available_pattern = re.compile('^(\d+)')
@@ -39,7 +47,7 @@ class SiteScraper(object):
         'DNT': '1',
     }
 
-    def __init__(self, site, job, update_job_last_notified):
+    def __init__(self, site, job, update_job_last_notified, notifications):
         self.job = job
         self.update_job_last_notified = update_job_last_notified
         self.contact_methods = dict()
@@ -56,7 +64,7 @@ class SiteScraper(object):
         self.init_cookies()
         self.data['parkId'] = site['park_id']
         self.data['contractCode'] = site['contract_code']
-        self.notifications = Notifications()
+        self.notifications = notifications
 
     def run(self):
         data = self.build_form_data_for_site()
@@ -132,12 +140,8 @@ class SiteScraper(object):
                                 parsed_url.query + \
                                 '&arvdate=' + urllib.quote(arvdate) + \
                                 '&lengthOfStay=' + str(self.length_of_stay)
-                            output = """
-                                Hi {name}, \n\n
-                                We found you a campsite for {site_name} on {arvdate} for {nights}.
-                                Quick, go get it before someone else does! \n\n
-                                {url}
-                                """.format(
+                            output = message_template.format(
+                                id=self.job.id,
                                 name=self.name,
                                 site_name=self.site['name'],
                                 arvdate=arvdate,
@@ -150,7 +154,7 @@ class SiteScraper(object):
                                     self.contact_methods['email_address'],
                                     subject,
                                     output
-                                )
+                                    )
                             if hasattr(self.contact_methods, 'phone_number'):
                                 self.notifications.send_text(self.contact_methods['phone_number'], subject, link_with_arv_date)
                             # Debugging to see when people get notified.
