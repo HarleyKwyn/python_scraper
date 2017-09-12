@@ -149,13 +149,14 @@ class SiteScraper(object):
                                 url=link_with_arv_date
                             )
                             subject = u"\u26FA We found you a campsite for {0}!".format(arvdate)
-                            if hasattr(self.contact_methods, 'email_address'):
+                            print self.contact_methods
+                            if 'email_address' in self.contact_methods:
                                 self.notifications.send_email(
                                     self.contact_methods['email_address'],
                                     subject,
                                     output
                                     )
-                            if hasattr(self.contact_methods, 'phone_number'):
+                            if 'phone_number' in self.contact_methods:
                                 self.notifications.send_text(self.contact_methods['phone_number'], subject, link_with_arv_date)
                             # Debugging to see when people get notified.
                             # Also, if they get spammed I get spammed @_@
