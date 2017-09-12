@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html
-  style="background: url(/static/images/YosemiteValley.jpg) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
+<html>
   <head>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
     <script src="/static/js/image_switch.js"> </script>
@@ -16,6 +15,8 @@
     {% endblock %}
   </head>
   <body style="background: transparent">
+    <div id="yos" class="bgImg" style="opacity: 1; z-index: -1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: url(/static/images/YosemiteValley.jpg) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;"></div>
+    <div id="tou" class="bgImg" style="opacity: 0; z-index: -1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: url(/static/images/ToulumneMeadows.jpg) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;"></div>
     <div id="content" class="container">{% block content %}{% endblock %}</div>
     <div id="footer" class="footer">
       {% block footer %}
